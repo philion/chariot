@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+        <title>
+        </title>
+        <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/jquery.mobile/1.2.0/jquery.mobile-1.2.0.min.css" />
+        <link rel="stylesheet" href="my.css" />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js">
+        </script>
+        <script src="https://ajax.aspnetcdn.com/ajax/jquery.mobile/1.2.0/jquery.mobile-1.2.0.min.js">
+        </script>
+        <script src="my.js">
+        </script>
+        <!-- User-generated css -->
+        <style>
+        </style>
+        <!-- User-generated js -->
+        <script>
+            try {
+
+    $(function() {
+
+    });
+
+  } catch (error) {
+    console.error("Your javascript has an error: " + error);
+  }
+        </script>
+    </head>
+    <body>
+        <!-- Home -->
+        <div data-role="page" id="page1">
+            <div data-theme="a" data-role="header">
+                <h3>Zeus</h3>
+            </div>
+            <div data-role="content">
+                <div data-role="navbar">
+                    <ul>
+                        <li><a href="/controls" data-transition="fade">Controls</a></li>
+                        <li><a href="/devices" data-transition="fade">Devices</a></li>
+                        <li><a href="/config" data-transition="fade">Config</a></li>
+                    </ul>
+                </div>
+				<div>
+					<table>
+						<tr><td></td><td>UP</td><td></td></tr>
+						<tr><td>LEFT</td><td>ENTER</td><td>RIGHT</td></tr>
+						<tr><td></td><td>DOWN</td><td></td></tr>
+					</table>
+				</div>
+				
+				<div data-role="controlgroup" data-type="horizontal">
+					<a href="index.html" data-role="button">&lt;&lt;</a>
+					<a href="index.html" data-role="button">Play/Pause</a>
+					<a href="index.html" data-role="button">&gt;&gt;</a>
+				</div>
+				
+                <div data-role="fieldcontain">
+                    <fieldset data-role="controlgroup">
+                        <label for="slider1">Volume</label>
+                        <input type="range" name="slider" value="50" min="0" max="100" data-highlight="true" />
+                    </fieldset>
+                </div>
+            </div>
+			<!--
+            <div data-theme="a" data-role="footer" data-position="fixed">
+                <h3>Footer</h3>
+            </div>
+			-->
+        </div>
+    </body>
+</html>

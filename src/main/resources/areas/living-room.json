@@ -1,0 +1,54 @@
+{
+  "devices": [
+    {
+      "name": "denon",
+      "model": "denon-avr-2112ci",
+      "type": "telnet",
+      "address": "192.168.1.21",
+      "eol": "\r",
+      "inputs": {
+        "tivo": "SAT/CBL",
+        "pandora": "PANDORA",
+        "appletv": "DVD",
+        "wii": "V.AUX",
+        "radio": "TUNER",
+        "ps3": "GAME",
+        "xbox": "GAME2",
+        "roku": "CD"
+      }
+    },
+    {
+      "name": "kuro",
+      "model": "pioneer-pro-111fd",
+      "type": "telnet",
+      "address": "192.168.1.22",
+      "inputs": {
+        "denon": "INPUT1"
+      }
+    },
+    {
+        "name": "tivo",
+        "model": "tivo-hd",
+        "type": "telnet",
+        "address": "192.168.1.23"
+    },
+    {
+        "name": "appletv",
+        "model": "apple-appletv2",
+        "type": "telnet",
+        "address": "192.168.1.25"
+    },
+    {
+        "name": "ps3",
+        "model": "sony-playstation3",
+        "type": "telnet",
+        "address": "192.168.1.26"
+    },
+    {
+        "name": "xbox",
+        "model": "microsoft-xbox360",
+        "type": "telnet",
+        "address": "192.168.1.24"
+    }
+  ]
+}

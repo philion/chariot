@@ -3,10 +3,14 @@ package com.acmerocket.zeus.core;
 import java.io.File;
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class DeviceLoader {
-    
+    private static final Logger LOG = LoggerFactory.getLogger(Device.class);
+
     private final ObjectMapper mapper = new ObjectMapper();
     
 //    public DeviceLoader() {
@@ -69,10 +73,13 @@ public class DeviceLoader {
         DeviceLoader loader = new DeviceLoader();
         
         DeviceSet devices = loader.load("number9.json");
-        System.out.println(devices);
+        //System.out.println(devices);
         
         Receiver receiver = devices.reciever("denon");
-        System.out.println("volume: " + receiver.volume());
+        LOG.debug("volume: {}", receiver.volume());
+        
+        receiver.pwrOff();
+        LOG.debug("receiver: {}", receiver);
         
 //        receiver.pwrOn();
 //        

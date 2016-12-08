@@ -1,4 +1,5 @@
 name: denon-avr-2112
+manufacturer: denon
 driver: telnet
 roles: [amp, receiver, pandora]
 

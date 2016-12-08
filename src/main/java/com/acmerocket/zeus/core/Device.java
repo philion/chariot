@@ -63,13 +63,13 @@ public class Device {
     }
     
     public String sendCommand(String command, String[] args) {
-        LOG.debug("Sending command: {}({})", command, args);
+        LOG.debug("Sending command: {}" + (args == null ? "" : "({})"), command, args);
         
         // build raw command
         String rawCommand = this.getRawCommand(command);
         if (rawCommand == null) {
             LOG.warn("Unknown command {}, ignoring.", command);
-            System.out.println("### " + this.getModel().getCommands());
+            LOG.debug("### " + this.getModel().getCommands());
             return null;
         }
                 
@@ -78,13 +78,13 @@ public class Device {
         String fullCommand = appendCommands(this.getSeparator(), rawCommand, rawArgs);
         
         try {
-            LOG.debug(">>> '{}'", fullCommand);
+            LOG.debug(">>> {}", fullCommand);
             String result = this.getDriver().sendRawCommand(fullCommand);
-            LOG.debug("<<< '{}'", result);
 
             if (result != null) {
                 result = this.processResult(result);
             }
+            LOG.debug("<<< {}", result);
             return result;
         }
         catch (IOException e) {

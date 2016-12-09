@@ -56,7 +56,7 @@ public class Device {
     }
     
     protected Model loadModel(String modelName) throws IOException {
-        return Model.load("denon-avr-2112ci");
+        return Model.load(modelName);
     }
 
     public String sendCommand(String command) {

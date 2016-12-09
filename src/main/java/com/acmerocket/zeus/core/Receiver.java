@@ -3,7 +3,6 @@ package com.acmerocket.zeus.core;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Arrays;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -78,4 +77,5 @@ public interface Receiver {
             }            
         }
     }
+    // NOTE: Volume value for Denon is 0-based, 1 off from the 1-based display. Increments in 0.5% total volume.
 }

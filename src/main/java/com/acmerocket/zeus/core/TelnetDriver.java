@@ -59,10 +59,9 @@ public class TelnetDriver implements Driver {
 
     public synchronized void connect() throws IOException {
         if (this.isConnected()) {
-            LOG.debug("Already connected");
+            LOG.trace("Already connected");
             return;
         }
-        //LOG.info("Connecting to {}......", this);
         Socket socket = new Socket(address, port);
         this.out = new PrintStream(socket.getOutputStream());
         this.in = new BufferedInputStream(socket.getInputStream());

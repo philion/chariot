@@ -26,4 +26,8 @@ public class DeviceSet {
         Device device = this.get(name);
         return Receiver.Factory.wrap(device);
     }
+
+    public String getDeviceNames() {
+        return this.devices.keySet().toString();
+    }
 }

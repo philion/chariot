@@ -77,9 +77,14 @@ public class DeviceLoader {
         
         Receiver receiver = devices.reciever("denon");
         LOG.debug("volume: {}", receiver.volume());
+        receiver.volumeUp();
+        LOG.debug("volume: {}", receiver.volume());
+        receiver.volumeDown();
+        LOG.debug("volume: {}", receiver.volume());
+
         
-        receiver.pwrOff();
-        LOG.debug("receiver: {}", receiver);
+        //receiver.pwrOff();
+        //LOG.debug("receiver: {}", receiver);
         
 //        receiver.pwrOn();
 //        

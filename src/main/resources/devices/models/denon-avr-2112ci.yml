@@ -6,7 +6,7 @@ roles: [amp, receiver, pandora]
 commands:
     pwr-on: PWON
     pwr-off: PWSTANDBY
-    status: PW?
+    status: MV?
     volume-up: MVUP
     volume-down: MVDOWN
     setvolume: MV%s

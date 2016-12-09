@@ -3,6 +3,7 @@ package com.acmerocket.zeus.core;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Arrays;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -18,6 +19,7 @@ public interface Receiver {
     public String name();
     public String volume(); 
     public String input();
+    public String status();
     
     public static final class Factory {
         public static Receiver wrap(Device device) {
@@ -25,15 +27,6 @@ public interface Receiver {
             return (Receiver)Proxy.newProxyInstance(Receiver.class.getClassLoader(), 
                     new Class[] { Receiver.class }, handler);            
         }
-        
-        // FIXME REMOVE
-//        public static void main(String[] args) throws Exception {
-//            Device device = new TelnetDevice("192.168.1.21");
-//            Receiver receiver = Receiver.Factory.wrap(device);
-//            //System.out.println(receiver);
-//            System.out.println(receiver.on().volumeUp().setInput("tivo").input());
-//            //System.out.println(receiver.on());
-//        }
     }
     
     public static final class ReceiverHandler implements InvocationHandler {

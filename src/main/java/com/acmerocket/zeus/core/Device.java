@@ -1,6 +1,7 @@
 package com.acmerocket.zeus.core;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -67,10 +68,12 @@ public class Device {
         
         // build raw command
         String rawCommand = this.getRawCommand(command);
+        LOG.debug("Raw command: {}", rawCommand);
         if (rawCommand == null) {
             LOG.warn("Unknown command {}, ignoring.", command);
             LOG.debug("### " + this.getModel().getCommands());
-            return null;
+            //return null;
+            throw new IllegalArgumentException("Unknown command: " + command);
         }
                 
         String[] rawArgs = this.processCommandArgs(args);
@@ -120,6 +123,9 @@ public class Device {
     }
 
     protected String[] processCommandArgs(String[] args) {
+        if (args != null) {
+          LOG.debug("args: {}", Arrays.asList(args));
+        }
         return args;
     }
     

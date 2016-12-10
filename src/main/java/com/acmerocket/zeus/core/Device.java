@@ -64,9 +64,12 @@ public class Device {
     }
     
     public String sendCommand(String command, String[] args) {
-        LOG.debug("Sending command: {}" + (args == null ? "" : "({})"), command, args);
+        LOG.debug("Sending command: {}" + (args == null || args.length == 0 ? "" : "({})"), command, args);
         
         // build raw command
+        // side issue: interface/API is designed for symmetric "device volume" (get) and "device volume 50" to set.
+        // This implies that the existance of the param indicates a "set", but there's no way to resolve that through
+        // existing "raw command".
         String rawCommand = this.getRawCommand(command);
         LOG.debug("Raw command: {}", rawCommand);
         if (rawCommand == null) {
@@ -81,13 +84,13 @@ public class Device {
         String fullCommand = appendCommands(this.getSeparator(), rawCommand, rawArgs);
         
         try {
-            LOG.debug(">>> {}", fullCommand);
+            LOG.info(">>> {}", fullCommand);
             String result = this.getDriver().sendRawCommand(fullCommand);
 
             if (result != null) {
                 result = this.processResult(result);
             }
-            LOG.debug("<<< {}", result);
+            LOG.info("<<< {}", result);
             return result;
         }
         catch (IOException e) {
@@ -105,13 +108,14 @@ public class Device {
     }
 
     protected static String appendCommands(char separator, String command, String[] args) {        
-        if (args != null) {
-            StringBuilder buf = new StringBuilder(command);
-
-            for (String arg : args) {
-                buf.append(separator).append(arg);
-            }
-            return buf.toString();
+        if (args != null && args.length > 0) {
+//            StringBuilder buf = new StringBuilder(command);
+//
+//            for (String arg : args) {
+//                buf.append(separator).append(arg);
+//            }
+//            return buf.toString();
+            return String.format(command, (Object[])args);
         }
         else {
             return command;

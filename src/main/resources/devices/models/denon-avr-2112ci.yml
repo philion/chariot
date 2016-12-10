@@ -4,12 +4,12 @@ driver: telnet
 roles: [amp, receiver, pandora]
 
 commands:
-    pwr-on: PWON
-    pwr-off: PWSTANDBY
+    power-on: PWON
+    power-off: PWSTANDBY
     status: MV?
     volume-up: MVUP
     volume-down: MVDOWN
-    setvolume: MV%s
+    set-volume: MV%s
     volume: MV?
     muteon: MUON
     muteoff: MUOFF

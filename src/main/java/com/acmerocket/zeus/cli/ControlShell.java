@@ -2,7 +2,10 @@ package com.acmerocket.zeus.cli;
 
 import static java.lang.String.format;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Scanner;
@@ -56,22 +59,22 @@ public class ControlShell {
             final String deviceName = sis.next();
             
             if (EXIT_COMMANDS.contains(deviceName)) {
-                output("Exit command %s issued, exiting!", deviceName);
+                output("Exit command %s issued, exiting.\n", deviceName);
                 break;
             }
             
             Device device = this.devices.get(deviceName);
             if (device != null) {
                 final String command = sis.next();
-                //final String[] opts = sis.nextLine().split("\\s+");
+                final String[] opts = sis.nextLine().trim().split("\\s+");
                 
-                String result = device.sendCommand(command);
-           
-                output("[%s %s] => %s\n", device, command, result);
+                String result = device.sendCommand(command, opts);
+                //output("[%s %s](%s) => %s\n", device, command, opts, result);
+                output("%s\n", result);
             }
             else {
                 output("Unknown device: %s\n", deviceName);
-                output("Valid options are: %s", this.devices.getDeviceNames());
+                output("Valid options are: %s\n", this.devices.getDeviceNames());
             }
             
             output(this.prompt);
@@ -83,8 +86,27 @@ public class ControlShell {
         DeviceLoader loader = new DeviceLoader();
         DeviceSet devices = loader.load("number9.json");
         ControlShell shell = new ControlShell(devices);
+        
+        if (args != null && args.length > 0) {
+            shell.execute(args);
+        }
+        
         shell.run();
+        
         System.exit(0);
+    }
+
+    private void execute(String[] args) throws UnsupportedEncodingException {
+        String command = String.join(" ", args) + " quit\n";
+        InputStream commandInput = new ByteArrayInputStream(command.getBytes("UTF-8"));
+        InputStream oldInput = System.in;
+        try {
+            System.setIn(commandInput);
+            //output("executing: %s", command);
+        } 
+        finally {
+            System.setIn(oldInput);
+        }
     }
 
     // (device-name|macro-name) (action) (params)

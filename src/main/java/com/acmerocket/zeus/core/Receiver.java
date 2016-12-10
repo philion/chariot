@@ -4,14 +4,13 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
-import org.apache.commons.lang3.StringUtils;
-
 public interface Receiver {
-    public Receiver pwrOn();
-    public Receiver pwrOff();
+    public Receiver powerOn();
+    public Receiver powerOff();
     public Receiver setInput(String input);
     public Receiver volumeUp();
     public Receiver volumeDown();
+    
     public Receiver setVolume(String value);
     public Receiver setName(String name);
 
@@ -36,11 +35,11 @@ public interface Receiver {
             //System.out.println(">> " + method.getName() + (objArgs != null ? Arrays.asList(objArgs) : "[]"));
             
             String command = method.getName();
-            // strip 'set'
-            if (command.startsWith("set")) {
-                command = command.substring(3);
-                command = StringUtils.uncapitalize(command);
-            }
+//            // strip 'set'
+//            if (command.startsWith("set")) {
+//                command = command.substring(3);
+//                command = StringUtils.uncapitalize(command);
+//            }
             
             // process capitol chars
             StringBuffer cmdBuffer = new StringBuffer();

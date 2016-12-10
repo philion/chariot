@@ -1,0 +1,15 @@
+#!/bin/bash
+
+name=$(basename $0)
+PROJECT=$HOME/Projects/$name
+JAR=$PROJECT/target/$name-0.1-SNAPSHOT.jar
+
+if [ -f $JAR ]
+then
+    java -jar $JAR $*
+else
+    echo $JAR doesn\'t exist, building...
+    cd $PROJECT
+    mvn -q package
+    java -jar $JAR $*
+fi

@@ -2,6 +2,7 @@ package com.acmerocket.zeus.core;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -74,7 +75,7 @@ public class Device {
         LOG.debug("Raw command: {}", rawCommand);
         if (rawCommand == null) {
             LOG.warn("Unknown command {}, ignoring.", command);
-            LOG.debug("### " + this.getModel().getCommands());
+            LOG.info("### " + this.getModel().getCommandNames());
             //return null;
             throw new IllegalArgumentException("Unknown command: " + command);
         }
@@ -139,5 +140,9 @@ public class Device {
 
     public void setDriver(Driver driver) {
         this.driver = driver;
+    }
+    
+    public Collection<String> getCommands() {
+    	return this.getModel().getCommandNames();
     }
 }

@@ -25,30 +25,9 @@
       "inputs": {
         "denon": "INPUT1"
       }
-    },
-    {
-        "name": "tivo",
-        "model": "tivo-hd",
-        "type": "telnet",
-        "address": "192.168.1.23"
-    },
-    {
-        "name": "appletv",
-        "model": "apple-appletv2",
-        "type": "telnet",
-        "address": "192.168.1.25"
-    },
-    {
-        "name": "ps3",
-        "model": "sony-playstation3",
-        "type": "telnet",
-        "address": "192.168.1.26"
-    },
-    {
-        "name": "xbox",
-        "model": "microsoft-xbox360",
-        "type": "telnet",
-        "address": "192.168.1.24"
+    }],
+    "defaults": {
+    	"receiver": "denon",
+    	"display": "kuro"
     }
-  ]
 }

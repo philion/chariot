@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.dataformat.yaml.snakeyaml.Yaml;
 
@@ -31,6 +32,10 @@ public class Model {
 
     public Map<String,String> getCommands() {
         return commands;
+    }
+    
+    public Set<String> getCommandNames() {
+    	return this.commands.keySet();
     }
 
     public List<String> getRoles() {

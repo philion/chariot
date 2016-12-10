@@ -15,12 +15,15 @@ import java.util.TreeSet;
 
 import javax.annotation.Nonnull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.acmerocket.chariot.core.DeviceException;
 import com.acmerocket.chariot.core.DeviceLoader;
 import com.acmerocket.chariot.core.DeviceSet;
 
 public class ChariotShell {
-    //private static final Logger LOG = LoggerFactory.getLogger(ChariotShell.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ChariotShell.class);
 
     public static final String DEFAULT_PROMPT = "\nchariot> ";
 
@@ -29,16 +32,6 @@ public class ChariotShell {
         final SortedSet<String> ecmds = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
         ecmds.addAll(Arrays.asList("exit", "done", "quit", "end", "fino"));
         EXIT_COMMANDS = Collections.unmodifiableSortedSet(ecmds);
-
-        // final SortedSet<String> hcmds = new
-        // TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
-        // hcmds.addAll(Arrays.asList("help", "helpi", "?"));
-        // HELP_COMMANDS = Collections.unmodifiableSet(hcmds);
-
-        // DATE_PATTERN = Pattern.compile("\\d{4}([-\\/])\\d{2}\\1\\d{2}"); //
-        // http://regex101.com/r/xB8dR3/1
-        // HELP_MESSAGE = format("Please enter some data or enter one of the
-        // following commands to exit %s", EXIT_COMMANDS);
     }
     
     private String prompt = DEFAULT_PROMPT;
@@ -72,17 +65,18 @@ public class ChariotShell {
             String deviceName = parameters[0];
             
             if (EXIT_COMMANDS.contains(deviceName)) {
-                output("Exit command %s issued, exiting.", deviceName);
-                break; // FIXME
+                //output("Exit command %s issued, exiting.", deviceName);
+            	LOG.info("Exiting.");
+            	break; // FIXME
             }
             
         	if (parameters.length == 1) {
         		try {
-        			output("Valid commands: %s", this.devices.getCommands(deviceName));
+        			output("commands: %s", this.devices.getCommands(deviceName));
         		}
         		catch (DeviceException ex) {
 	            	output("%s\n", ex.getMessage());
-	            	output("Valid input: %s", ex.getValidInput());
+	            	output("valid: %s", ex.getValidInput());
 	                output(this.prompt);
 
 	                continue; // FIXME
@@ -95,7 +89,7 @@ public class ChariotShell {
 	            
 	            try {
 	            	String result = this.devices.sendCommand(deviceName, command, opts);
-	            	output("%s", result);
+	            	output("%s %s: %s", deviceName, command, result);
 	            }
 	            catch (DeviceException ex) {
 	            	output("%s\n", ex.getMessage());

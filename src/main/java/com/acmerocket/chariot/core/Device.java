@@ -78,13 +78,13 @@ public class Device {
         String fullCommand = appendCommands(this.getSeparator(), rawCommand, rawArgs);
         
         try {
-            LOG.info(">>> {}", fullCommand);
+            LOG.info("{}>>> {}", this.name, fullCommand);
             String result = this.getDriver().sendRawCommand(fullCommand);
 
             if (result != null) {
                 result = this.processResult(result);
             }
-            LOG.info("<<< {}", result);
+            LOG.info("{}<<< {}", this.name, result);
             return result;
         }
         catch (IOException e) {

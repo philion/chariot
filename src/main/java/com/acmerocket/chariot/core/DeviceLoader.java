@@ -11,14 +11,14 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class DeviceLoader {
-    private static final Logger LOG = LoggerFactory.getLogger(Device.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DeviceLoader.class);
 
     private final ObjectMapper mapper = new ObjectMapper();
     
     public DeviceSet load(String deviceFile) throws IOException {
     	// resolve device file
     	URL url = this.getClass().getResource("/areas/" + deviceFile + ".json");
-    	LOG.info("Found URL: {}", url);
+    	LOG.debug("Found URL: {}", url);
         return this.load(url.openStream());
     }
     

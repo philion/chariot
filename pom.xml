@@ -6,13 +6,13 @@
 		<maven>3.0.0</maven>
 	</prerequisites>
 
-	<groupId>com.acmerocket.zeus</groupId>
-	<artifactId>zeus</artifactId>
+	<groupId>com.acmerocket</groupId>
+	<artifactId>chariot</artifactId>
 	<version>0.1-SNAPSHOT</version>
-	<name>Zeus Media Management</name>
+	<name>Chariot Home Automation Hub</name>
 
 	<dependencies>
-		<!-- FIXME: Upgrade ot dropwizard.org!!! -->
+		<!-- FIXME: Upgrade to dropwizard.org!!! -->
 		<dependency>
 			<groupId>com.yammer.dropwizard</groupId>
 			<artifactId>dropwizard-core</artifactId>
@@ -42,6 +42,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>${project.artifactId}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -112,11 +113,9 @@
 						</goals>
 						<configuration>
 							<transformers>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>com.acmerocket.zeus.cli.ControlShell</mainClass>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>com.acmerocket.chariot.cli.ChariotShell</mainClass>
 								</transformer>
 							</transformers>
 						</configuration>

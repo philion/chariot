@@ -2,12 +2,12 @@ package com.acmerocket.chariot.cli;
 
 import static java.lang.String.format;
 
-import java.io.ByteArrayInputStream;
+import java.io.Closeable;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.SortedSet;
@@ -15,6 +15,15 @@ import java.util.TreeSet;
 
 import javax.annotation.Nonnull;
 
+import org.jline.reader.Candidate;
+import org.jline.reader.Completer;
+import org.jline.reader.EndOfFileException;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.ParsedLine;
+import org.jline.reader.UserInterruptException;
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +31,7 @@ import com.acmerocket.chariot.core.DeviceException;
 import com.acmerocket.chariot.core.DeviceLoader;
 import com.acmerocket.chariot.core.DeviceSet;
 
-public class ChariotShell {
+public class ChariotShell implements Closeable {
     private static final Logger LOG = LoggerFactory.getLogger(ChariotShell.class);
 
     public static final String DEFAULT_PROMPT = "\nchariot> ";
@@ -35,30 +44,50 @@ public class ChariotShell {
     }
     
     private String prompt = DEFAULT_PROMPT;
+    
+    //private final Terminal terminal;
+    private final PrintWriter out;
+    //private final Scanner scanner;
+    private final LineReader reader;
+
     private final DeviceSet devices;
     
-    public ChariotShell(DeviceSet arg) {
+    public ChariotShell(DeviceSet arg) throws IOException {
         this.devices = arg;
+        
+        Terminal terminal = TerminalBuilder.terminal();
+        
+         this.reader = LineReaderBuilder.builder()
+        		.terminal(terminal)
+                .completer(new DeviceCompleter())
+                .build();
+
+        this.out = new PrintWriter(terminal.output());
+        //this.scanner = new Scanner(terminal.input());
     }
 
-    private void output(@Nonnull final String format, @Nonnull final Object... args) {
-        System.out.print(format(format, args));
-        System.out.flush();
+    private void output(@Nonnull String format, @Nonnull Object... args) {
+        this.out.print(format(format, args));
+        this.out.flush();
     }
     
     public void run() {
-        final Scanner scanner = new Scanner(System.in);
-        output(this.prompt);
-
-        while (scanner.hasNext()) {
-        	
-        	String input = scanner.nextLine().trim();
-        	
+        //while (this.scanner.hasNext()) {
+        while (true) {
+            String input = null;
+            try {
+                input = this.reader.readLine(this.prompt);
+            } 
+            catch (UserInterruptException e) { /* ignore */ } 
+            catch (EndOfFileException e) {
+                return;
+            }
+            
         	// check empty
         	if (input == null || input.length() == 0) {
         		// display help
         		this.displayHelp();
-        		break; // FIXME
+        		continue; // FIXME
         	}
         	
             String[] parameters = input.split("\\s+");
@@ -67,7 +96,7 @@ public class ChariotShell {
             if (EXIT_COMMANDS.contains(deviceName)) {
                 //output("Exit command %s issued, exiting.", deviceName);
             	LOG.info("Exiting.");
-            	break; // FIXME
+            	return;
             }
             
         	if (parameters.length == 1) {
@@ -77,9 +106,6 @@ public class ChariotShell {
         		catch (DeviceException ex) {
 	            	output("%s\n", ex.getMessage());
 	            	output("valid: %s", ex.getValidInput());
-	                output(this.prompt);
-
-	                continue; // FIXME
         		}
         	}
         	else {
@@ -94,15 +120,10 @@ public class ChariotShell {
 	            catch (DeviceException ex) {
 	            	output("%s\n", ex.getMessage());
 	            	output("Valid input: %s", ex.getValidInput());
-	                output(this.prompt);
-
 	                continue; // FIXME
 	            }
-            }
-            
-            output(this.prompt);
+            }            
         }
-        scanner.close();
     }
 
     /**
@@ -120,32 +141,46 @@ public class ChariotShell {
 		
         DeviceLoader loader = new DeviceLoader();
         DeviceSet devices = loader.load(toLoad);
-        ChariotShell shell = new ChariotShell(devices);
         
-        if (args != null && args.length > 0) {
-            shell.execute(args);
-        }
-        
+        ChariotShell shell = new ChariotShell(devices);        
         shell.run();
+        shell.close();
         
         System.exit(0);
     }
 
-    private void execute(String[] args) throws UnsupportedEncodingException {
-        String command = String.join(" ", args) + " quit\n";
-        InputStream commandInput = new ByteArrayInputStream(command.getBytes("UTF-8"));
-        InputStream oldInput = System.in;
-        try {
-            System.setIn(commandInput);
-            //output("executing: %s", command);
-        } 
-        finally {
-            System.setIn(oldInput);
-        }
-    }
+	/* (non-Javadoc)
+	 * @see java.io.Closeable#close()
+	 */
+	@Override
+	public void close() throws IOException {
+		this.out.close();
+		//this.reader.close();
+	}
+
+//    private void execute(String[] args) throws UnsupportedEncodingException {
+//        String command = String.join(" ", args) + " quit\n";
+//        InputStream commandInput = new ByteArrayInputStream(command.getBytes("UTF-8"));
+//        InputStream oldInput = System.in;
+//        try {
+//            System.setIn(commandInput);
+//            //output("executing: %s", command);
+//        } 
+//        finally {
+//            System.setIn(oldInput);
+//        }
+//    }
 
     // (device-name|macro-name) (action) (params)
     // i.e. denon volume-up, denon power-on, appletv hulu, etc.
     // macro: (device-a power-on, device-b power-on, device-a input device-b,
     // device-a output device-c
+	
+	private static class DeviceCompleter implements Completer {
+		@Override
+		public void complete(LineReader reader, ParsedLine line, List<Candidate> candidates) {
+			// TODO Auto-generated method stub
+			
+		}
+	}
 }

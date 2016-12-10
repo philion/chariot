@@ -59,10 +59,6 @@ public class Device {
     protected Model loadModel(String modelName) throws IOException {
         return Model.load(modelName);
     }
-
-    public String sendCommand(String command) {
-        return this.sendCommand(command, null);
-    }
     
     public String sendCommand(String command, String[] args) {
         LOG.debug("Sending command: {}" + (args == null || args.length == 0 ? "" : "({})"), command, args);
@@ -74,10 +70,7 @@ public class Device {
         String rawCommand = this.getRawCommand(command);
         LOG.debug("Raw command: {}", rawCommand);
         if (rawCommand == null) {
-            LOG.warn("Unknown command {}, ignoring.", command);
-            LOG.info("### " + this.getModel().getCommandNames());
-            //return null;
-            throw new IllegalArgumentException("Unknown command: " + command);
+            throw new DeviceException("Unknown command: " + command, this.getModel().getCommandNames().toString());
         }
                 
         String[] rawArgs = this.processCommandArgs(args);

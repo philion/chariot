@@ -2,6 +2,8 @@ package com.acmerocket.zeus.core;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,72 +15,33 @@ public class DeviceLoader {
 
     private final ObjectMapper mapper = new ObjectMapper();
     
-//    public DeviceLoader() {
-//        this.mapper = initializeMapper();
-//    }
-//    
-//    private static ObjectMapper initializeMapper() {
-//        ObjectMapper mapper = new ObjectMapper();
-//        
-//        // load device modeule
-//        //SimpleModule deviceModule = new SimpleModule("Device").addDeserializer(Device.class, new DeviceDeserializer());
-//        //mapper.registerModule(deviceModule);
-//
-//        return mapper;
-//    }
-
     public DeviceSet load(String deviceFile) throws IOException {
-        return this.load(new File(deviceFile));
+    	// resolve device file
+    	URL url = this.getClass().getResource("/areas/" + deviceFile + ".json");
+    	LOG.info("Found URL: {}", url);
+        return this.load(url.openStream());
     }
     
-    public DeviceSet load(File deviceFile) throws IOException {
+    public DeviceSet load(File deviceFile) throws IOException {    	
         DeviceSet devices = this.mapper.readValue(deviceFile, DeviceSet.class);
-
-//        for (Map<String,String> description : descriptions) {
-//            String name = description.get("name");
-//            
-//            // load the model
-//            String modelName = description.get("model");
-//            Model model = Model.load(modelName);
-//            
-//        }
-        
         return devices;
     }
     
-//    private static final class DescriptionSet extends ArrayList<Map<String,String>>{
-//        
-//        private Map<String,DeviceDescription> devices = new HashMap<String,DeviceDescription>();
-//        
-//        public synchronized void setDevices(Collection<DeviceDescription> devices) {
-//            for (DeviceDescription device : devices) {
-//                this.devices.put(device.getName(), device);
-//            }
-//        }
-//    }
-    
-//    private static class DeviceDeserializer extends JsonDeserializer<Device> {
-//
-//        @Override
-//        public Device deserialize(JsonParser parser, DeserializationContext context) {
-//            // first, need to figure out which device to create...
-//            
-//            //parser.get
-//            
-//            return null;
-//        }
-//    }
+    public DeviceSet load(InputStream deviceIn) throws IOException {    	
+        return this.mapper.readValue(deviceIn, DeviceSet.class);
+    }
     
     public static void main(String[] args) throws Exception {
         DeviceLoader loader = new DeviceLoader();
         
-        DeviceSet devices = loader.load("number9.json");
-        //System.out.println(devices);
+        DeviceSet devices = loader.load("living-room");
+        LOG.info("Devices: {}", devices);
+        LOG.info("Commands: {}", devices.getCommands());
         
-        Receiver receiver = devices.reciever("denon");
-        LOG.debug("volume: {}", receiver.volume());
-        receiver.setVolume("50");
-        LOG.debug("volume: {}", receiver.volume());
+        //Receiver receiver = devices.reciever("denon");
+        //LOG.debug("volume: {}", receiver.volume());
+        //receiver.setVolume("50");
+        //LOG.debug("volume: {}", receiver.volume());
 
 
         

@@ -15,15 +15,12 @@ import java.util.TreeSet;
 
 import javax.annotation.Nonnull;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.acmerocket.zeus.core.Device;
+import com.acmerocket.zeus.core.DeviceException;
 import com.acmerocket.zeus.core.DeviceLoader;
 import com.acmerocket.zeus.core.DeviceSet;
 
 public class ControlShell {
-    private static final Logger LOG = LoggerFactory.getLogger(ControlShell.class);
+    //private static final Logger LOG = LoggerFactory.getLogger(ControlShell.class);
 
     public static final String DEFAULT_PROMPT = "\nzeus> ";
 
@@ -79,30 +76,34 @@ public class ControlShell {
                 break; // FIXME
             }
             
-            Device device = this.devices.get(deviceName);
-            if (device != null) {
-            	if (parameters.length == 1) {
-	                output("Valid commands: %s", device.getCommands());
-            	}
-            	else {
-		            String command = parameters[1];
-		            String[] opts = Arrays.copyOfRange(parameters, 2, parameters.length);
-		            //LOG.info("## device={}, command={}, opts={}", deviceName, command, opts);
-		            
-		            try {
-		            	String result = device.sendCommand(command, opts);
-		            	output("%s", result);
-		            }
-		            catch (IllegalArgumentException iae) {
-		                output("Unknown command: %s, for device={}", command, deviceName);
-		                output("Valid commands: %s", device.getCommands());
-		                break; // FIXME
-		            }
-            	}
-            }
-            else {
-                output("Unknown device: %s", deviceName);
-        		this.displayHelp();
+        	if (parameters.length == 1) {
+        		try {
+        			output("Valid commands: %s", this.devices.getCommands(deviceName));
+        		}
+        		catch (DeviceException ex) {
+	            	output("%s\n", ex.getMessage());
+	            	output("Valid input: %s", ex.getValidInput());
+	                output(this.prompt);
+
+	                continue; // FIXME
+        		}
+        	}
+        	else {
+	            String command = parameters[1];
+	            String[] opts = Arrays.copyOfRange(parameters, 2, parameters.length);
+	            //LOG.info("## device={}, command={}, opts={}", deviceName, command, opts);
+	            
+	            try {
+	            	String result = this.devices.sendCommand(deviceName, command, opts);
+	            	output("%s", result);
+	            }
+	            catch (DeviceException ex) {
+	            	output("%s\n", ex.getMessage());
+	            	output("Valid input: %s", ex.getValidInput());
+	                output(this.prompt);
+
+	                continue; // FIXME
+	            }
             }
             
             output(this.prompt);
@@ -117,9 +118,14 @@ public class ControlShell {
         this.output("Valid devices are: %s", this.devices.getDeviceNames());
 	}
 
-	public static void main(final String[] args) throws IOException {
+	public static void main(String[] args) throws IOException {
+		String toLoad = "living-room";
+		if (args != null && args.length > 0) {
+			toLoad = args[0];
+		}
+		
         DeviceLoader loader = new DeviceLoader();
-        DeviceSet devices = loader.load("number9.json");
+        DeviceSet devices = loader.load(toLoad);
         ControlShell shell = new ControlShell(devices);
         
         if (args != null && args.length > 0) {

@@ -1,0 +1,17 @@
+name: denon-avr-2112
+manufacturer: denon
+driver: telnet
+roles: [amp, receiver, pandora]
+
+commands:
+    power-on: PWON
+    power-off: PWSTANDBY
+    status: MV?
+    volume-up: MVUP
+    volume-down: MVDOWN
+    set-volume: MV%s
+    volume: MV?
+    muteon: MUON
+    muteoff: MUOFF
+    input: SI%s
+    

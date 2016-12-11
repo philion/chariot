@@ -7,20 +7,15 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
-import java.util.Scanner;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.annotation.Nonnull;
 
-import org.jline.reader.Candidate;
-import org.jline.reader.Completer;
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
-import org.jline.reader.ParsedLine;
 import org.jline.reader.UserInterruptException;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
@@ -45,9 +40,7 @@ public class ChariotShell implements Closeable {
     
     private String prompt = DEFAULT_PROMPT;
     
-    //private final Terminal terminal;
     private final PrintWriter out;
-    //private final Scanner scanner;
     private final LineReader reader;
 
     private final DeviceSet devices;
@@ -59,11 +52,10 @@ public class ChariotShell implements Closeable {
         
          this.reader = LineReaderBuilder.builder()
         		.terminal(terminal)
-                .completer(new DeviceCompleter())
+                //.completer(new StringsCompleter(this.devices.getDeviceNames(), this.devices.getCommands()))
                 .build();
-
+         
         this.out = new PrintWriter(terminal.output());
-        //this.scanner = new Scanner(terminal.input());
     }
 
     private void output(@Nonnull String format, @Nonnull Object... args) {
@@ -71,65 +63,65 @@ public class ChariotShell implements Closeable {
         this.out.flush();
     }
     
-    public void run() {
-        //while (this.scanner.hasNext()) {
-        while (true) {
-            String input = null;
+    protected void handleInput(final String input) throws EndOfFileException {
+        String[] parameters = input.split("\\s+");
+        String deviceName = parameters[0];
+
+        // TODO: More flexible command structure, with each device it's own "command"
+        // TODO: Stnadard ways to generate grammers/intentions from config
+        if (EXIT_COMMANDS.contains(deviceName)) {
+        	output("%s: exiting.\n", deviceName);
+        	throw new EndOfFileException(deviceName);
+        }
+        else if (parameters.length == 1) { // assume device name only
+    		try {
+    			output("commands: %s", this.devices.getCommands(deviceName));
+    		}
+    		catch (DeviceException ex) {
+            	output("%s\n", ex.getMessage());
+            	output("valid: %s", ex.getValidInput());
+    		}
+    	}
+    	else {
+            String command = parameters[1];
+            String[] opts = Arrays.copyOfRange(parameters, 2, parameters.length);
+            LOG.debug("device={}, command={}, opts={}", deviceName, command, opts);
+            
             try {
-                input = this.reader.readLine(this.prompt);
+            	String result = this.devices.sendCommand(deviceName, command, opts);
+            	output("%s %s: %s", deviceName, command, result);
+            }
+            catch (DeviceException ex) {
+            	output("%s\n", ex.getMessage());
+            	output("Valid input: %s", ex.getValidInput());
+            }
+        }
+    }
+    
+    public void run() {
+        while (true) {
+            try {
+                String input = this.reader.readLine(this.prompt);
+            	if (input == null || input.length() == 0) {
+            		this.printHelp();
+            	}
+            	else {
+            		// handle the input
+            		this.handleInput(input);
+            	}
             } 
             catch (UserInterruptException e) { /* ignore */ } 
             catch (EndOfFileException e) {
-                return;
+            	// all done
+                break;
             }
-            
-        	// check empty
-        	if (input == null || input.length() == 0) {
-        		// display help
-        		this.displayHelp();
-        		continue; // FIXME
-        	}
-        	
-            String[] parameters = input.split("\\s+");
-            String deviceName = parameters[0];
-            
-            if (EXIT_COMMANDS.contains(deviceName)) {
-                //output("Exit command %s issued, exiting.", deviceName);
-            	LOG.info("Exiting.");
-            	return;
-            }
-            
-        	if (parameters.length == 1) {
-        		try {
-        			output("commands: %s", this.devices.getCommands(deviceName));
-        		}
-        		catch (DeviceException ex) {
-	            	output("%s\n", ex.getMessage());
-	            	output("valid: %s", ex.getValidInput());
-        		}
-        	}
-        	else {
-	            String command = parameters[1];
-	            String[] opts = Arrays.copyOfRange(parameters, 2, parameters.length);
-	            //LOG.info("## device={}, command={}, opts={}", deviceName, command, opts);
-	            
-	            try {
-	            	String result = this.devices.sendCommand(deviceName, command, opts);
-	            	output("%s %s: %s", deviceName, command, result);
-	            }
-	            catch (DeviceException ex) {
-	            	output("%s\n", ex.getMessage());
-	            	output("Valid input: %s", ex.getValidInput());
-	                continue; // FIXME
-	            }
-            }            
         }
     }
 
     /**
 	 * Show standard help, for the provided devices
 	 */
-	protected void displayHelp() {
+	protected void printHelp() {
         this.output("Valid devices are: %s", this.devices.getDeviceNames());
 	}
 
@@ -149,38 +141,8 @@ public class ChariotShell implements Closeable {
         System.exit(0);
     }
 
-	/* (non-Javadoc)
-	 * @see java.io.Closeable#close()
-	 */
 	@Override
 	public void close() throws IOException {
 		this.out.close();
-		//this.reader.close();
-	}
-
-//    private void execute(String[] args) throws UnsupportedEncodingException {
-//        String command = String.join(" ", args) + " quit\n";
-//        InputStream commandInput = new ByteArrayInputStream(command.getBytes("UTF-8"));
-//        InputStream oldInput = System.in;
-//        try {
-//            System.setIn(commandInput);
-//            //output("executing: %s", command);
-//        } 
-//        finally {
-//            System.setIn(oldInput);
-//        }
-//    }
-
-    // (device-name|macro-name) (action) (params)
-    // i.e. denon volume-up, denon power-on, appletv hulu, etc.
-    // macro: (device-a power-on, device-b power-on, device-a input device-b,
-    // device-a output device-c
-	
-	private static class DeviceCompleter implements Completer {
-		@Override
-		public void complete(LineReader reader, ParsedLine line, List<Candidate> candidates) {
-			// TODO Auto-generated method stub
-			
-		}
 	}
 }

@@ -42,3 +42,11 @@ So that 'living-room plex play Miles Davis' (as an Echo command, "living-room" m
     plex on (i.e. appletv open plex)
     plex play Miles Davis
     
+## End-to-End Prototype
+
+1. Iniate macro with Alexa: "Alexa, tell the house to queue The Force Awakens."
+2. Tell plex to display "The Force Awakens" (display info window)
+3. Set default viewing for plex
+4. Set lighting in whole house scheme for plex/movies.
+5. Alexa reples with ready
+6. "Alexa, tell house to start movie."

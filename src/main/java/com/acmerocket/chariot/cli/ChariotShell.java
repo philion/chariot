@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.acmerocket.chariot.core.DeviceException;
-import com.acmerocket.chariot.core.DeviceLoader;
 import com.acmerocket.chariot.core.DeviceSet;
 
 public class ChariotShell implements Closeable {
@@ -43,11 +42,9 @@ public class ChariotShell implements Closeable {
     private final PrintWriter out;
     private final LineReader reader;
 
-    private final DeviceSet devices;
+    private final DeviceSet devices = new DeviceSet(); // empty
     
-    public ChariotShell(DeviceSet arg) throws IOException {
-        this.devices = arg;
-        
+    public ChariotShell() throws IOException {        
         Terminal terminal = TerminalBuilder.terminal();
         
          this.reader = LineReaderBuilder.builder()
@@ -126,18 +123,15 @@ public class ChariotShell implements Closeable {
 	}
 
 	public static void main(String[] args) throws IOException {
-		String toLoad = "living-room";
-		if (args != null && args.length > 0) {
-			toLoad = args[0];
-		}
-		
-        DeviceLoader loader = new DeviceLoader();
-        DeviceSet devices = loader.load(toLoad);
+        ChariotShell shell = new ChariotShell();
         
-        ChariotShell shell = new ChariotShell(devices);        
-        shell.run();
+        if (args != null && args.length > 0) {
+        	shell.handleInput(String.join(" ", args));
+        }
+        else {
+        	shell.run();
+        }        
         shell.close();
-        
         System.exit(0);
     }
 

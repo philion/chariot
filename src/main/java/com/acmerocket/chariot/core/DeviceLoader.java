@@ -12,29 +12,31 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class DeviceLoader {
     private static final Logger LOG = LoggerFactory.getLogger(DeviceLoader.class);
-
-    private final ObjectMapper mapper = new ObjectMapper();
     
-    public DeviceSet load(String deviceFile) throws IOException {
+    private static final String ROOM_PATH = "/areas/";
+    private static final String ROOM_EXT = ".json";
+
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+    
+    public static DeviceSet load(String deviceFile) throws IOException {
     	// resolve device file
-    	URL url = this.getClass().getResource("/areas/" + deviceFile + ".json");
+    	URL url = DeviceLoader.class.getResource(ROOM_PATH + deviceFile + ROOM_EXT);
     	LOG.debug("Found URL: {}", url);
-        return this.load(url.openStream());
+    	
+        return load(url.openStream());
     }
     
-    public DeviceSet load(File deviceFile) throws IOException {    	
-        DeviceSet devices = this.mapper.readValue(deviceFile, DeviceSet.class);
+    public static DeviceSet load(File deviceFile) throws IOException {    	
+        DeviceSet devices = MAPPER.readValue(deviceFile, DeviceSet.class);
         return devices;
     }
     
-    public DeviceSet load(InputStream deviceIn) throws IOException {    	
-        return this.mapper.readValue(deviceIn, DeviceSet.class);
+    public static DeviceSet load(InputStream deviceIn) throws IOException {    	
+        return MAPPER.readValue(deviceIn, DeviceSet.class);
     }
     
-    public static void main(String[] args) throws Exception {
-        DeviceLoader loader = new DeviceLoader();
-        
-        DeviceSet devices = loader.load("living-room");
+    public static void main(String[] args) throws Exception {        
+        DeviceSet devices = load("living-room");
         LOG.info("Devices: {}", devices);
         LOG.info("Commands: {}", devices.getCommands());
         
